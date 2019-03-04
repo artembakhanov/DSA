@@ -3,6 +3,29 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        TournamentsTask.solve();
+    }
+}
+
+/**
+ * Class that is used for solving task 2.3 from Assignment #1 (DSA Course)
+ * Solution is checked on codeforces.com (The submission number: 50036757)
+ *
+ * For task 2.1 check List, DynamicArrayList, and DoublyLinkedList
+ * For task 2.2 check class Sorter
+ * Tests for lists and sorting are in Tester
+ *
+ * Everything here is written by Artem Bahanov (Innopolis University student) in 2019 as a solution for Assignment #1 (DSA Course).
+ *
+ * @author Artem Bahanov (BS18-03)
+ * @see List
+ * @see DynamicArrayList
+ * @see DoublyLinkedList
+ * @see Sorter
+ * @see Tester
+ */
+class TournamentsTask{
+    public static void solve() {
         Scanner input = new Scanner(System.in);
         int tournamentNumber = input.nextInt(); // read number of tournaments
         input.nextLine();
@@ -13,8 +36,8 @@ public class Main {
             input.nextLine();
 
             // creating list of teams
-            List<Team> teams = new DynamicArrayList<>();
-            List<String> teamNames = new DynamicArrayList<>();
+            List<Team> teams = new DynamicArrayList<>(teamNumber);
+            List<String> teamNames = new DynamicArrayList<>(teamNumber);
             for (int j = 0; j < teamNumber; j++) {
                 String teamName = input.nextLine();
                 teams.addLast(new Team(teamName));
@@ -64,23 +87,7 @@ public class Main {
         input.close();
     }
 }
-/**
- * Class that is used for solving task 2.3 from Assignment #1 (DSA Course)
- * Solution is checked on codeforces.com
- *
- * For task 2.1 check List, DynamicArrayList, and DoublyLinkedList
- * For task 2.2 check class Sorter
- * Tests for lists and sorting are in Tester
- *
- * Everything here is written by Artem Bahanov (Innopolis University student) in 2019 as a solution for Assignment #1 (DSA Course).
- *
- * @author Artem Bahanov (BS18-03)
- * @see List
- * @see DynamicArrayList
- * @see DoublyLinkedList
- * @see Sorter
- * @see Tester
- */
+
 
 
 /**
@@ -204,6 +211,17 @@ class DynamicArrayList<T> implements List<T> {
     public DynamicArrayList() {
         size = 0;
         arraySize = 1;
+        array = (T[]) new Object[arraySize];
+    }
+
+    /**
+     * Create list with inner array of the given size
+     * @param reserve The size
+     */
+    @SuppressWarnings("unchecked")
+    public DynamicArrayList(int reserve) {
+        size = 0;
+        arraySize = reserve;
         array = (T[]) new Object[arraySize];
     }
 
@@ -380,13 +398,12 @@ class DynamicArrayList<T> implements List<T> {
     //***********************************************************
 
     // resize inner array by copying previous version to new bigger array
+    @SuppressWarnings("unchecked")
     private void resize() {
         T temp[] = this.array;
         this.arraySize *= 2;
         this.array = (T[]) new Object[arraySize];
-        for (int i = 0; i < size; i++) {
-            this.array[i] = temp[i];
-        }
+        if (size >= 0) System.arraycopy(temp, 0, this.array, 0, size);
     }
 
     // check if index is in bounds
