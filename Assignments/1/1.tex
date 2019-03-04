@@ -1,0 +1,134 @@
+\documentclass[12pt]{article}
+\usepackage{listings}
+\usepackage{mathtools} 
+\usepackage{amsmath}
+\lstset{columns=fullflexible,
+        mathescape=true,
+        literate=
+               {=}{$\leftarrow{}$}{1}
+               {==}{$={}$}{1},
+        morekeywords={if,then,else,return,for,not,to,do},
+        tabsize=4 ,
+        showtabs=false,
+        breakatwhitespace=true,
+        columns=flexible      
+        }
+\setcounter{section}{-1}
+\title{DSA Assignment 1}
+\author{Artem Bahanov (BS18-03)}
+\date{\today}
+
+\begin{document}
+\maketitle
+\newpage
+\section{Introduction}
+\subsection{Information about codeforces submission}
+The code that is in java class file was tested on codeforces.com.\\
+The submission number is 50036757.
+\subsection{Solution for bonus question}
+Answer: selection sort.\\
+Every iteration selection sorting algorithm selects maximum (or minimum, as we want) of unsorted part of array (list) to insert it to the appropriate position of already sorted part. So first k elements (sorted part) is first k maximums (or minimums), it means that it is possible to stop sorting array of teams at certain iteration (l) and then get sublist of first l elements. This sublist consists of first maximums.\\
+Insertion sort does not provide this feature.
+\subsection{Important corrections}
+In the task 3 of Assignment 1 it is very important to say that lines 4 and 5 have to be divided into two parts: comparison and the statement after it. It happens because 1st and 2nd part of this lines run different number of times (\textbf{condition part} always runs when program reaches this line but \textbf{statement part} not always). Finally, the code should look like this:
+
+\begin{lstlisting}
+  isContainedArray(A, B)
+1.for i = 0 to n-1 do
+2.	contained = FALSE
+3.  for j = 0 to n-1 do
+4.  	if A[i] == B[j] then
+5.   		contained = TRUE
+6.	if not contained then
+7.		return FALSE
+8.return TRUE
+
+\end{lstlisting}
+
+In this solution I will refer to this code that is semantically the same as code presented in the task sheet.
+
+\section{Part A}
+For part A it is needed to analyze program and show that worst-case runtime of the algorithm is $O(n^2)$.
+
+\subsection{Code analysis}
+For each line I will give a cost - abstract time needed for executing this line and then count the number of executions of each line. The table is shown below.
+
+\begin{lstlisting}
+  isContainedArray(A, B)			cost		times
+1.for i = 0 to n-1 do				$c_{1}$			$n + 1$
+2.	contained = FALSE				$c_{2}$			$n$
+3.  for j = 0 to n-1 do				$c_{3}$			$n \cdot (n + 1)$
+4.  	if A[i] == B[j] then			$c_{4}$			$n ^ 2$
+5.   		contained = TRUE		$c_{5}$			$n^2$
+6.	if not contained then			$c_{6}$			$n$
+7.		return FALSE				$c_{7}$			0
+8.return TRUE						$c_{8}$			1
+
+\end{lstlisting}
+\textbf{Explanation:}\\
+1. For-loop executes exactly n + 1 times (but body of loop does n times). It happens because the statement checks n true statements and 1 false.\\
+2. Each simple statement inside a loop executes n times.\\
+3. Similar situation as with (1) line. Loop inside loop.\\
+4. $n^2$ - simple body statement inside double loop.\\
+5. In worst case this statement can execute EVERY time (e.g. $A = [1, ..., 1], B = [1,..., 1]$).\\
+6. ...\\
+7 \& 8. Return statement executes only once.\\\\
+The running time of this algorithm is
+\begin{align}\label{1}
+    T(n) = c_{1}\cdot (n + 1) + c_{2}\cdot n + c_{3}\cdot(n + 1) \cdot n + c_{4}\cdot n^2 + c_{5}\cdot n^2 + c_{6}\cdot n + \notag\\ + c_{7}\cdot 0 + c_{8}\cdot 1 = ( c_{3} + c_{4} + c_{5} ) \cdot n^2 + ( c_{1} + c_{2} + c_{3} + c_{6} ) \cdot n + ( c_{1} + c_{8} )
+\end{align}
+$(c_{3} + c_{4} + c_{5})$, $(c_{1} + c_{2} + c_{3} + c_{6})$  and $(c_{1} + c_{8})$ can be replaced with $\alpha$, $\beta$ and $\gamma$ respectively, so \eqref{1} becomes
+\begin{align}\label{2}
+T(n) = \alpha \cdot n ^ 2 + \beta \cdot n + \gamma
+\end{align}
+\subsection{Proving that time complexity is $O(n^2)$}
+To prove that $T(n) = O(n^2)$ we only need to prove that there exist numbers $n_{0}$ and $c$ such that
+\begin{align}\label{3}
+0 \leq T(n) \leq c \cdot n ^ 2 \text{ for all } n \geq n_{0}.
+\end{align}
+by the definition of $O(n)$
+It is obvious that $T(n) \geq 0$ for all $n \geq 0$. We can omit this part.\\
+Let us rewrite \eqref{3}:
+\begin{align}\label{4}
+\alpha \cdot n ^ 2 + \beta \cdot n + \gamma \leq c \cdot n ^ 2
+\end{align}
+division both parts of the inequality by $n^2$ yields:
+\begin{align}\label{5}
+\alpha + \frac{\beta}{n} + \frac{\gamma}{n ^ 2} \leq c
+\end{align}
+Let us choose $n \geq n_{0} = 1$, it is obvious that maximum value of left part of \eqref{5} is $\alpha + \beta + \gamma$, so it it possible to choose $c = \alpha + \beta + \gamma$.\\
+The inequality holds, then $T(n) = O(n ^ 2)$. \textbf{QED}.
+\subsection{Results}
+We got that worst-case runtime of the algorithm is $O(n^2)$.
+
+\section{Part B}
+Let us consider $A = B = [1, ..., 1]$, then it is the worst case because it will go through all lines in double loop since return false line will not be executed.\\
+For showing that worst-case runtime of the algorithm is $\Omega (n ^ 2)$ we will use the definition of $\Omega(f(n))$.
+From 1.1:
+\begin{align}\label{6}
+0 \leq c \cdot n ^ 2 \leq \alpha \cdot n ^ 2 + \beta \cdot n + \gamma \text{ for all } n \geq n_{0}
+\end{align}
+\begin{align}\label{7}
+0 \leq c \leq \alpha + \frac{\beta}{n}+ \frac{\gamma}{n ^ 2} \text{ for all } n \geq n_{0}
+\end{align}
+If $n \geq n_{0} = 1$ and $c = \alpha$, we get:
+\begin{align}\label{8}
+\alpha \cdot n ^ 2 \leq \alpha \cdot n ^ 2 + \beta \cdot n + \gamma
+\end{align}
+\begin{align}\label{9}
+0 \leq \beta \cdot n + \gamma
+\end{align}
+Inequality \eqref{9} holds. Then $T(n) = \Omega (n ^ 2)$. \textbf{QED}.
+
+\section{Part C}
+From \textbf{Part A} and \textbf{Part B} we got 
+\begin{align}\label{10}
+T(n) = O(n ^ 2); T(n) = \Omega (n ^ 2)
+\end{align}
+then by \textbf{Theorem 3.1} (For any two functions $f(n)$ and $g(n)$, we have $f(n) = \Theta(g(n)))$ iff $f(n) = O(g(n))$ and $f(n) = \Omega (g(n))$) we get
+\begin{align}
+T(n) = \Theta (n ^ 2)
+\end{align}
+It means that worst-case runtime is $\Theta (n ^ 2)$.
+\end{document}
+
