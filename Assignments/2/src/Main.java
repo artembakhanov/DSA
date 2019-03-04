@@ -1,10 +1,9 @@
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        String word1 = sc.next(), word2 = sc.next();
-        System.out.println(DamerauLevenshteinDist.estimate(word1, word2));
+        Solutions.task2_2();
     }
 
 
@@ -97,14 +96,52 @@ class Solutions {
         Scanner scanner = new Scanner(System.in);
 
         int n = scanner.nextInt(); // number of words
+        scanner.nextLine();
 
         for (int i = 0; i < n; i++) {
-            String[] words = scanner.next().split(" ");
+            String[] words = scanner.nextLine().split(" ");
             System.out.println(DamerauLevenshteinDist.estimate(words[0], words[1]));
         }
     }
 
+    /**
+     * Solution for task 2.2 (Correction suggestions)
+     */
     public static void task2_2() {
+        Scanner scanner = new Scanner(System.in);
+
+        int n = scanner.nextInt(); // number of words in the dictionary
+        scanner.nextLine();
+
+        String[] dict = new String[n];
+        int[] suggestions = new int[n]; // array that contains the indexes of words from dict.
+
+        for (int i = 0; i < n; i++) {
+            dict[i] = scanner.next();
+        }
+
+        Arrays.sort(dict); // lexicographic order
+
+        String word = scanner.next();
+
+        int sugNum = 0, curMin = n; // number of suggestions; current minimum number of suggestions
+
+        for (int i = 0; i < n; i++) {
+            int distance = DamerauLevenshteinDist.estimate(dict[i], word);
+            if (distance == curMin) suggestions[sugNum++] = i; // if distance eq just add a suggestion
+            else if (distance < curMin) { // if distance < minimum -> clear all previous suggestions; add current
+                suggestions[(sugNum = 1) - 1] = i;
+                curMin = distance;
+            }
+        }
+
+        // print all suggestions
+        for (int i = 0; i < sugNum; i++) {
+            System.out.println(dict[suggestions[i]] + " ");
+        }
+    }
+
+    public static void task2_3() {
 
     }
 
