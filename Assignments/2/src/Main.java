@@ -12,6 +12,9 @@ public class Main {
  * This class is used for calculating difference between two strings.
  * This distance is called Damerau–Levenshtein distance (Optimal string alignment distance) because we are allowed to swap adjacent chars.
  * This is used for solution for all subtasks of task 2 from the assignment.
+ * Task 2.1 codeforces submission number: 50853226
+ * Task 2.2 codeforces submission number: 50853832
+ * Task 2.3 codeforces submission number: 50864343
  * @see <a href="https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance">"Damerau–Levenshtein distance" on Wikipedia</a>
  *
  * @author Artem Bahanov (BS18-03)
