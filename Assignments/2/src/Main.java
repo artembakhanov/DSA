@@ -14,7 +14,7 @@ public class Main {
  * This is used for solution for all subtasks of task 2 from the assignment.
  * Task 2.1 codeforces submission number: 50853226
  * Task 2.2 codeforces submission number: 50853832
- * Task 2.3 codeforces submission number: 50864343
+ * Task 2.3 codeforces submission number: 50890388
  * @see <a href="https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance">"Damerau–Levenshtein distance" on Wikipedia</a>
  *
  * @author Artem Bahanov (BS18-03)
@@ -148,7 +148,7 @@ class Solutions {
 
     /**
      * Solution for task 2.3 (Text autocorrection)
-     * Codeforces submission number: 50864343
+     * Codeforces submission number: 50890388
      */
     public static void task2_3() {
         Scanner scanner = new Scanner(System.in);
@@ -183,7 +183,7 @@ class Solutions {
             // if it is not a word
             if (!words.get(i).matches("[a-z]+")) continue;
 
-            int min = 100000, minIndex = -1;
+            int min = Integer.MAX_VALUE, minIndex = -1;
             for (int j = 0; j < dict.size(); j++) {
                 int curDist;
 
