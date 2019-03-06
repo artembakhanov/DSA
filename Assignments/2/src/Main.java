@@ -86,6 +86,8 @@ class DamerauLevenshteinDist {
 
 /**
  * This class contains all solutions.
+ * For each task algorithm that estimates Damerau–Levenshtein distance between words is used.
+ * @see DamerauLevenshteinDist
  *
  * @author Artem Bahanov (BS18-03)
  * @version 1.0
@@ -95,6 +97,9 @@ class Solutions {
     /**
      * Solution for task 2.1 (Misspellings)
      * Codeforces submission number: 50853226
+     *
+     * Here I do not use special algorithm strategies and data structures.
+     * Array of strings is used to store 2 words.
      */
     public static void task2_1() {
         Scanner scanner = new Scanner(System.in);
@@ -111,6 +116,10 @@ class Solutions {
     /**
      * Solution for task 2.2 (Correction suggestions)
      * Codeforces submission number: 50853832
+     *
+     * For this solution I use array of strings (dictionary) that is sorted using Timsort algorithm
+     * that is built in standard library. I used it since it is the best stable sorting algorithm.
+     * For finding minimum I use "on-time" strategy: just check if current value is less than the current minimum value.
      */
     public static void task2_2() {
         Scanner scanner = new Scanner(System.in);
@@ -149,6 +158,12 @@ class Solutions {
     /**
      * Solution for task 2.3 (Text autocorrection)
      * Codeforces submission number: 50890388
+     *
+     * For this solution I use regular expressions because it is much easier to parse texts with them than with my own solution.
+     * I use hashmap for storing number of occurrences of a particular word, the words is key, value - the number.
+     * After the first line is fully read, hashmap is converted to arraylist of Map entries, then it is sorted
+     * by value (number of occurrences) in reverse order using built-in sorting algorithm (Timsort).
+     * For words of text I use arraylist, because it is dynamic (I do not know the exact number of words in the text).
      */
     public static void task2_3() {
         Scanner scanner = new Scanner(System.in);
