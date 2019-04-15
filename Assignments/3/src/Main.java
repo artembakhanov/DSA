@@ -254,9 +254,7 @@ class BinomialHeap<K extends Comparable<? super K>, V> implements MergeableHeapA
 
         if (head == null)
             return;
-//        } else if (((BinomialHeap<K, V>) heap).head == null) {
-//            return;
-//        }
+
 
         BinomialHeapNode<K, V> newHead = head;
 
@@ -292,6 +290,7 @@ class BinomialHeap<K extends Comparable<? super K>, V> implements MergeableHeapA
     }
 
     /**
+     * Return pair of node that has maximum key and previous node
      * @return pair {some node -> node with maximum key}
      */
     private Pair<BinomialHeapNode<K, V>, BinomialHeapNode<K, V>> maxNode (){
