@@ -1,5 +1,3 @@
-import javafx.util.Pair;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -12,6 +10,7 @@ public class Main {
 
 /**
  * This class contains the solution for task 2.2 (TO_DO-list).
+ * Codeforces submission number: 52901730
  * @author Artem Bahanov (BS18-03)
  * @version 1.0
  */
@@ -78,13 +77,13 @@ class Solution {
 
             /* emptying 2nd heap while printing out all tasks */
             while (entry.getValue().getValue().max() != null) {
-                System.out.println("\t" + entry.getValue().getValue().removeMax());
+                System.out.println("\t" + entry.getValue().getValue().removeMax().getValue());
             }
         }
 
         System.out.println("TODOList");
         while (combinedTodoList.max() != null) {
-            System.out.println("\t" + combinedTodoList.removeMax());
+            System.out.println("\t" + combinedTodoList.removeMax().getValue());
         }
     }
 }
@@ -108,13 +107,13 @@ interface MergeableHeapADT<K extends Comparable<? super K>, V> {
      * Find value with maximum key from the heap
      * @return value with maximum key
      */
-    V max();
+    Pair<K, V> max();
 
     /**
      * Extract value with maximum key from the heap
      * @return value with maximum key
      */
-    V removeMax();
+    Pair<K, V> removeMax();
 
     /**
      * Merge another heap with the present one, incorporating
@@ -184,9 +183,9 @@ class BinomialHeap<K extends Comparable<? super K>, V> implements MergeableHeapA
      * @return value with maximum key
      */
     @Override
-    public V max() {
+    public Pair<K, V> max() {
         Pair<BinomialHeapNode<K, V>, BinomialHeapNode<K, V>> max = maxNode();
-        return max.getValue() == null ? null : max.getValue().getValue();
+        return max.getValue() == null ? null : new Pair<>(max.getValue().getKey(), max.getValue().getValue());
     }
 
     /**
@@ -202,7 +201,7 @@ class BinomialHeap<K extends Comparable<? super K>, V> implements MergeableHeapA
      * @return value with maximum key
      */
     @Override
-    public V removeMax() {
+    public Pair<K, V> removeMax() {
 
         Pair<BinomialHeapNode<K, V>, BinomialHeapNode<K, V>> max = maxNode(); /* root that is going to be deleted */
         if (max.getValue() == null) return null; /* no such root? */
@@ -233,7 +232,7 @@ class BinomialHeap<K extends Comparable<? super K>, V> implements MergeableHeapA
         tempHeap.head = prevNode;
         merge(tempHeap);
 
-        return max.getValue().getValue();
+        return new Pair<>(max.getValue().getKey(), max.getValue().getValue());
     }
 
     /**
@@ -460,6 +459,30 @@ class BinomialHeapNode<K extends Comparable<? super K>, V> {
 }
 
 /**
+ * This class is used for Mergeable Heap ADT and Binomial Heap.
+ * I created this class because Pair class is not in standard libraries.
+ * @param <K>
+ * @param <V>
+ */
+class Pair<K, V> {
+    private K key;
+    private V value;
+
+    public Pair(K key, V value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    public K getKey() {
+        return key;
+    }
+
+    public V getValue() {
+        return value;
+    }
+}
+
+/**
  * This class was used for testing {@link BinomialHeap}.
  * @author Artem Bahanov (BS18-03)
  * @version 1.0
@@ -474,20 +497,20 @@ class BinomialHeapTester {
 
         /* check if two empty mergeable heaps merges correctly */
         heap1.merge(heap2);
-        System.out.println("Heap1 max: " + heap1.max()); // Heap1 max: null
-        System.out.println("Heap2 max: " + heap2.max()); // Heap2 max: null
+        System.out.println("Heap1 max: " + heap1.max().getValue()); // Heap1 max: null
+        System.out.println("Heap2 max: " + heap2.max().getValue()); // Heap2 max: null
 
-        System.out.println("Heap1 removed max: " + heap1.removeMax()); // Heap1 removed max: null
-        System.out.println("Heap2 removed max: " + heap2.removeMax()); // Heap2 removed max: null
+        System.out.println("Heap1 removed max: " + heap1.removeMax().getValue()); // Heap1 removed max: null
+        System.out.println("Heap2 removed max: " + heap2.removeMax().getValue()); // Heap2 removed max: null
 
         /* check if insertion, deletion and taking (extracting maximum) works */
         heap1.insert(9, "Value with key 9");
         heap1.insert(11, "Value with key 11");
-        System.out.println("Heap1 max: " + heap1.max()); // Heap1 max: Value with key 11
-        System.out.println("Heap1 removed max: " + heap1.removeMax()); // Heap1 removed max: Value with key 11
+        System.out.println("Heap1 max: " + heap1.max().getValue()); // Heap1 max: Value with key 11
+        System.out.println("Heap1 removed max: " + heap1.removeMax().getValue()); // Heap1 removed max: Value with key 11
         System.out.println("Heap1 max: " + heap1.max()); // Heap1 max: Value with key 9
-        System.out.println("Heap1 removed max: " + heap1.removeMax()); // Heap1 removed max: Value with key 9
-        System.out.println("Heap1 removed max: " + heap1.removeMax()); // Heap1 removed max: null
+        System.out.println("Heap1 removed max: " + heap1.removeMax().getValue()); // Heap1 removed max: Value with key 9
+        System.out.println("Heap1 removed max: " + heap1.removeMax().getValue()); // Heap1 removed max: null
 
         System.out.println("Heap2 max: " + heap2.max()); // Heap2 max: null
 
@@ -506,19 +529,19 @@ class BinomialHeapTester {
 
         heap2.merge(heap1);
 
-        System.out.println("Heap1 removed max: " + heap1.removeMax()); // Heap1 removed max: null
+        System.out.println("Heap1 removed max: " + heap1.removeMax().getValue()); // Heap1 removed max: null
 
-        System.out.println("Heap2 removed max: " + heap2.removeMax()); // Heap2 removed max: Value with key 15
-        System.out.println("Heap2 removed max: " + heap2.removeMax()); // Heap2 removed max: Value with key 10(1)
-        System.out.println("Heap2 removed max: " + heap2.removeMax()); // Heap2 removed max: Value with key 10
-        System.out.println("Heap2 removed max: " + heap2.removeMax()); // Heap2 removed max: Value with key 7
-        System.out.println("Heap2 removed max: " + heap2.removeMax()); // Heap2 removed max: Value with key 7
-        System.out.println("Heap2 removed max: " + heap2.removeMax()); // Heap2 removed max: Value with key 5
-        System.out.println("Heap2 removed max: " + heap2.removeMax()); // Heap2 removed max: Value with key 3
-        System.out.println("Heap2 removed max: " + heap2.removeMax()); // Heap2 removed max: Value with key 2
-        System.out.println("Heap2 removed max: " + heap2.removeMax()); // Heap2 removed max: Value with key 1
-        System.out.println("Heap2 removed max: " + heap2.removeMax()); // Heap2 removed max: Value with key -1
-        System.out.println("Heap2 removed max: " + heap2.removeMax()); // Heap2 removed max: null
+        System.out.println("Heap2 removed max: " + heap2.removeMax().getValue()); // Heap2 removed max: Value with key 15
+        System.out.println("Heap2 removed max: " + heap2.removeMax().getValue()); // Heap2 removed max: Value with key 10(1)
+        System.out.println("Heap2 removed max: " + heap2.removeMax().getValue()); // Heap2 removed max: Value with key 10
+        System.out.println("Heap2 removed max: " + heap2.removeMax().getValue()); // Heap2 removed max: Value with key 7
+        System.out.println("Heap2 removed max: " + heap2.removeMax().getValue()); // Heap2 removed max: Value with key 7
+        System.out.println("Heap2 removed max: " + heap2.removeMax().getValue()); // Heap2 removed max: Value with key 5
+        System.out.println("Heap2 removed max: " + heap2.removeMax().getValue()); // Heap2 removed max: Value with key 3
+        System.out.println("Heap2 removed max: " + heap2.removeMax().getValue()); // Heap2 removed max: Value with key 2
+        System.out.println("Heap2 removed max: " + heap2.removeMax().getValue()); // Heap2 removed max: Value with key 1
+        System.out.println("Heap2 removed max: " + heap2.removeMax().getValue()); // Heap2 removed max: Value with key -1
+        System.out.println("Heap2 removed max: " + heap2.removeMax().getValue()); // Heap2 removed max: null
     }
 }
 
