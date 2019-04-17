@@ -5,12 +5,13 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
         Solution.todoList();
+
     }
 }
 
 /**
  * This class contains the solution for task 2.2 (TO_DO-list).
- * Codeforces submission number: 52901730
+ * Codeforces submission number: 52901977
  * @author Artem Bahanov (BS18-03)
  * @version 1.0
  */
@@ -76,13 +77,13 @@ class Solution {
             combinedTodoList.merge(entry.getValue().getKey()); /* merge 1st copy with combined TO_DO list */
 
             /* emptying 2nd heap while printing out all tasks */
-            while (entry.getValue().getValue().max() != null) {
+            while (entry.getValue().getValue().max().getValue() != null) {
                 System.out.println("\t" + entry.getValue().getValue().removeMax().getValue());
             }
         }
 
         System.out.println("TODOList");
-        while (combinedTodoList.max() != null) {
+        while (combinedTodoList.max().getValue() != null) {
             System.out.println("\t" + combinedTodoList.removeMax().getValue());
         }
     }
@@ -185,7 +186,7 @@ class BinomialHeap<K extends Comparable<? super K>, V> implements MergeableHeapA
     @Override
     public Pair<K, V> max() {
         Pair<BinomialHeapNode<K, V>, BinomialHeapNode<K, V>> max = maxNode();
-        return max.getValue() == null ? null : new Pair<>(max.getValue().getKey(), max.getValue().getValue());
+        return max.getValue() == null ? new Pair<>(null, null) : new Pair<>(max.getValue().getKey(), max.getValue().getValue());
     }
 
     /**
@@ -204,7 +205,7 @@ class BinomialHeap<K extends Comparable<? super K>, V> implements MergeableHeapA
     public Pair<K, V> removeMax() {
 
         Pair<BinomialHeapNode<K, V>, BinomialHeapNode<K, V>> max = maxNode(); /* root that is going to be deleted */
-        if (max.getValue() == null) return null; /* no such root? */
+        if (max.getValue() == null) return new Pair<>(null, null); /* no such root? */
 
         if (max.getKey() != null) {
             max.getKey().setSibling(max.getValue().getSibling());
@@ -508,11 +509,11 @@ class BinomialHeapTester {
         heap1.insert(11, "Value with key 11");
         System.out.println("Heap1 max: " + heap1.max().getValue()); // Heap1 max: Value with key 11
         System.out.println("Heap1 removed max: " + heap1.removeMax().getValue()); // Heap1 removed max: Value with key 11
-        System.out.println("Heap1 max: " + heap1.max()); // Heap1 max: Value with key 9
+        System.out.println("Heap1 max: " + heap1.max().getValue()); // Heap1 max: Value with key 9
         System.out.println("Heap1 removed max: " + heap1.removeMax().getValue()); // Heap1 removed max: Value with key 9
         System.out.println("Heap1 removed max: " + heap1.removeMax().getValue()); // Heap1 removed max: null
 
-        System.out.println("Heap2 max: " + heap2.max()); // Heap2 max: null
+        System.out.println("Heap2 max: " + heap2.max().getValue()); // Heap2 max: null
 
 
         heap1.insert(7, "Value with key 7");
