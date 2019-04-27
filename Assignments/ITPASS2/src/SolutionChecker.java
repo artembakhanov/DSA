@@ -19,7 +19,6 @@ public class SolutionChecker {
     private static final int TAS = 2;
     public static final int STUDENTS = 3;
 
-
     private static final int ZERO_COURSES = 0;
     private static final int LACKING_CLASS = 1;
     private static final int UNTRAINED_CLASS = 2;
@@ -33,6 +32,7 @@ public class SolutionChecker {
     private static final String output = "output%d.txt"; // correct solution files name
     private static final String input = "input%d.txt"; // input files name
     private static final String GRADES_SHEET = "Grades";
+    private String feedbackDir = "feedback/";
     private ArrayList<String> names;
     private ArrayList<Double> grades;
     private String namesFile;
@@ -58,7 +58,7 @@ public class SolutionChecker {
 
     public void check(boolean createTable) throws IOException {
         if (this.createTable = createTable)
-            createTable(gradesFile);
+            createTable();
         getBestSolutions();
 
         for (int i = 0; i < bestSolutions.size(); i++) {
@@ -89,8 +89,6 @@ public class SolutionChecker {
             studentsSolutions.get(number - 1).add(getGrade(number, String.format("%sOutput%d.txt", name, number), courses, profs, tas, studs));
         }
     }
-
-
 
     private void evaluateGrades() {
 
@@ -220,7 +218,7 @@ public class SolutionChecker {
 
                     if (courses.get(lines.get(j)) == null || (course = courses.get(lines.get(j))).getId() <= currentCourse) {
                         if (course == null) {
-                            return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("Unknown course %s is found.", lines.get(j)));
+                            return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("Unknown course \"%s\" is found.", lines.get(j)));
                         }
                         return judgeFeedback.setVerdict(OUTPUT_ERROR, n, "Arrangement of courses is invalid.");
                     }
@@ -230,7 +228,7 @@ public class SolutionChecker {
                 } else if (j == 1) { // should be a name of a professor
                     Professor prof = profs.get(lines.get(j));
                     if (prof == null)
-                        return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("Unknown professor %s is found.", lines.get(j)));
+                        return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("Unknown professor \"%s\" is found.", lines.get(j)));
                     switch (pBusy[prof.getId()]) {
                         case ZERO_COURSES:
 
@@ -247,23 +245,23 @@ public class SolutionChecker {
                             if (prof.getCourses().contains(lines.get(0))) {
                                 pBusy[prof.getId()] = TWO_CLASSES;
                             } else {
-                                return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("Professor %s is assigned to more than one course, one of which they is not trained for.", prof.getName()));
+                                return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("Professor \"%s\" is assigned to more than one course, one of which they is not trained for.", prof.getName()));
                             }
 
                             break;
                         case UNTRAINED_CLASS:
 
-                            return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("Professor %s is assigned to more than one course, one of which they is not trained for.", prof.getName())); // one professor assigned to untrained course + some course
+                            return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("Professor \"%s\" is assigned to more than one course, one of which they is not trained for.", prof.getName())); // one professor assigned to untrained course + some course
                         case TWO_CLASSES:
-                            return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("Professor %s is assigned to more than two courses.", prof.getName())); // one professor is assigned to more that 2 classes
+                            return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("Professor \"%s\" is assigned to more than two courses.", prof.getName())); // one professor is assigned to more that 2 classes
                     }
 
 
                 } else if (j < 2 + course.getTAs()) {
                     TA ta = tas.get(lines.get(j));
                     if (ta == null || !ta.getCourses().contains(lines.get(0)) || tBusy[ta.getId()] == 4) {
-                        if (ta == null) return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("Unknown TA %s is found.", lines.get(j)));
-                        return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("TA %s is assigned to more than four labs.", lines.get(j)));
+                        if (ta == null) return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("Unknown TA \"%s\" is found.", lines.get(j)));
+                        return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("TA \"%s\" is assigned to more than four labs.", lines.get(j)));
                     }
 
                     tBusy[ta.getId()]++;
@@ -273,13 +271,13 @@ public class SolutionChecker {
 
                     if (stud == null || /*!stud.getCourses().contains(lines.get(0)) || */!studCourses.get(stud.getId()).remove(lines.get(0))) {
                         if (stud == null)
-                            return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("Unknown student %s is found.", lines.get(j)));
+                            return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("Unknown student \"%s\" is found.", lines.get(j)));
 
-                        return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("Student %s is assigned to course %s they did not ask for.", lines.get(j), lines.get(0)));
+                        return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("Student \"%s\" is assigned to course \"%s\" they did not ask for.", lines.get(j), lines.get(0)));
                     }
 
                 } else {
-                    return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("The number of students assigned to course %s is more than what the course can handle.", lines.get(0)));
+                    return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("The number of students assigned to course \"%s\" is more than what the course can handle.", lines.get(0)));
                 }
             }
         }
@@ -355,7 +353,7 @@ public class SolutionChecker {
                 studentBadness1.add(errLines.get(i));
             else if (i == badness1.size() + badness2.size() + badness5.size() + badness10.size() + badness20.size()) {
                 if (!errLines.get(i).matches(String.format("Total score is %d.", badnessPoints)))
-                    return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("Badness points are calculated incorrectly. Expected %d. Got %s.", badnessPoints, errLines.get(i))); // badness points are calculated incorrectly
+                    return judgeFeedback.setVerdict(OUTPUT_ERROR, n, String.format("Badness points are calculated incorrectly. Expected %d. Got \"%s\"", badnessPoints, errLines.get(i))); // badness points are calculated incorrectly
             } else if (!errLines.get(i).matches(""))
                 return judgeFeedback.setVerdict(OUTPUT_ERROR, n, "Excessive number of lines is found.");
         }
@@ -438,7 +436,14 @@ public class SolutionChecker {
         return names;
     }
 
-    private void createTable(String gradesFile) throws IOException {
+    private void createTable() throws IOException {
+        File file = new File(feedbackDir + gradesFile);
+
+        File parentFile = file.getParentFile();
+        if (!parentFile.exists()) {
+            parentFile.mkdirs();
+        }
+
         Workbook book = new HSSFWorkbook();
         Sheet sheet = book.createSheet(GRADES_SHEET);
 
@@ -447,9 +452,10 @@ public class SolutionChecker {
         row.createCell(0).setCellValue("Number");
         row.createCell(1).setCellValue("Names");
         row.createCell(2).setCellValue("Emails");
-        row.createCell(3).setCellValue("TaskGradesList (C)");
+        row.createCell(3).setCellValue("Grade");
+        row.createCell(4).setCellValue("Feedback");
 
-        sheet.autoSizeColumn(4);
+
 
         for (int i = 0; i < names.size(); i++) {
             Row r = sheet.createRow(i + 1);
@@ -464,12 +470,13 @@ public class SolutionChecker {
             r.createCell(2).setCellValue(email);
         }
 
-        book.write(new FileOutputStream(gradesFile));
+
+        book.write(new FileOutputStream(feedbackDir + gradesFile));
         book.close();
     }
 
     private void saveGrades(String gradesFile) throws IOException {
-        FileInputStream inputStream = new FileInputStream(new File(gradesFile));
+        FileInputStream inputStream = new FileInputStream(new File(feedbackDir + gradesFile));
         Workbook book = new HSSFWorkbook(inputStream);
         Sheet sheet = book.getSheet(GRADES_SHEET);
 
@@ -477,8 +484,14 @@ public class SolutionChecker {
             sheet.getRow(i + 1).createCell(3).setCellValue(grades.get(i) );
         }
 
+        sheet.autoSizeColumn(0);
+        sheet.autoSizeColumn(1);
+        sheet.autoSizeColumn(2);
+        sheet.autoSizeColumn(3);
+        sheet.autoSizeColumn(4);
+
         inputStream.close();
-        FileOutputStream outputStream = new FileOutputStream(gradesFile);
+        FileOutputStream outputStream = new FileOutputStream(feedbackDir + gradesFile);
         book.write(outputStream);
         book.close();
         outputStream.close();
@@ -488,7 +501,7 @@ public class SolutionChecker {
     private void saveFeedbacks() throws IOException {
 
         for (int i = 0; i < names.size(); i++) {
-            FileWriter fileWriter = new FileWriter(names.get(i) + "Feedback.txt");
+            FileWriter fileWriter = new FileWriter(feedbackDir + names.get(i) + "Feedback.txt");
             for (int j = 0; j < bestSolutions.size(); j++) {
                 JudgeFeedback judgeFeedback = studentsSolutions.get(j).get(i);
                 fileWriter.write(judgeFeedback.getVerdict(bestSolutions.get(j)));
